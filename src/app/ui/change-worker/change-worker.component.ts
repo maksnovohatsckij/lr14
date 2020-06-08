@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MyWorkerType, MyWorker } from 'src/app/shared/worker.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
@@ -17,6 +17,7 @@ export class ChangeWorkerComponent implements OnInit {
   public mask = ['+', '7', '(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
 
   @Input() worker: MyWorker;
+  @Output() changeWorker = new EventEmitter<MyWorker>();
 
   constructor() {
     this.form = new FormGroup({ // создание новой формы
@@ -28,10 +29,12 @@ export class ChangeWorkerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.name = this.worker.name;
-    this.surname = this.worker.surname;
-    this.type = this.worker.type;
-    this.number = this.worker.number;
+    this.form.setValue({
+      name: this.worker.name,
+      surname: this.worker.surname,
+      type: this.worker.type,
+      number: this.worker.number,
+    });
   }
 
   onChangeWorker() {
@@ -39,6 +42,8 @@ export class ChangeWorkerComponent implements OnInit {
     this.worker.surname = this.form.value.surname;
     this.worker.type = this.form.value.type;
     this.worker.number = this.form.value.number;
+
+    this.changeWorker.emit(this.worker);
   }
 
 }

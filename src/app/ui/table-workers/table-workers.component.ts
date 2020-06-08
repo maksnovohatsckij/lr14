@@ -11,8 +11,8 @@ export class TableWorkersComponent implements OnInit {
   @Input() title: string;
   @Input() workers: MyWorker[] = [];
 
-  @Output() deleteWorker = new EventEmitter<number>();
-  
+  @Output() deleteWorker = new EventEmitter<MyWorker>();
+  @Output() changeWorker = new EventEmitter<MyWorker>();
 
   constructor() { }
 
@@ -20,7 +20,11 @@ export class TableWorkersComponent implements OnInit {
 
   }
 
-  onDeleteWorker(id: number) {
-    this.deleteWorker.emit(id);
+  onDeleteWorker(worker: MyWorker) {
+    this.deleteWorker.emit(worker);
+  }
+
+  onChangeWorker(worker: MyWorker) {
+    this.changeWorker.emit(worker);
   }
 }

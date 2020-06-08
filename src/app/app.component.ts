@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import {
   MyWorker,
-  MyWorkersDatabase,
   MyWorkerType,
 } from './shared/worker.model';
+import { DataService } from './services/data.service';
+
 
 @Component({
   selector: 'app-root',
@@ -12,27 +13,56 @@ import {
 })
 export class AppComponent {
   title = 'Список сотрудников';
-  workers: MyWorker[] = MyWorkersDatabase;
+  workers: MyWorker[] = [];
   myWorkerType = MyWorkerType;
+
+  constructor(private base: DataService) {
+    this.getDatabase();
+  }
 
   getByType(type: number) {
     return this.workers.filter((worker) => worker.type === type);
   }
 
-  onDeleteById(id: number) {
-    let index = this.workers.findIndex((worker) => worker.id === id);
-    if (index !== -1) {
-      this.workers.splice(index, 1);
+  async getDatabase() {
+    try {
+      this.workers = await this.base.get();
+    } catch (err) {
+      console.error(err);
     }
   }
 
-  onAddWorker(worker) {
-    let id =
-      this.workers.length > 0
+  async onDeleteWorker(worker: MyWorker) {
+    try {
+      await this.base.delete(worker);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.getDatabase();
+    }
+  }
+
+  async onAddWorker(worker: MyWorker) {
+    try {
+      worker.id = this.workers.length > 0
         ? this.workers[this.workers.length - 1].id + 1
         : 0;
-    worker.id = id;
-    this.workers.push(worker);
+      await this.base.add(worker);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.getDatabase();
+    }
+  }
+
+  async onChangeWorker(worker: MyWorker) {
+    try {
+      await this.base.change(worker);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      this.getDatabase();
+    }
   }
 
 }
